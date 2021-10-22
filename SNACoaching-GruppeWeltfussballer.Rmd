@@ -1,0 +1,114 @@
+---
+title: "Unterlagen Coaching-Termin Gruppe Weltfußballer"
+author: "Dunja Fadel, Jakob Hertl, Naomi Genter, Christina Menner, Veronika Veile"
+date: "28/10/2021"
+output:
+  html_document
+---
+
+**Inhalt**
+*Story-Idee für den Edit-Beitrag*
+*Status des Forschungsberichts und grundlegende Idee der Visualisierung*
+*hilfreiches theorethisches Konzept mit Erklärungspotenzial*
+*grundlegende Idee der Visualisierung*
+*offene Fragen*
+
+**Story-Idee für den Edit-Beitrag**
+
+Da unser Gesamtnetzwerk sehr groß ist und eine große Menge an Kanten und Knoten hat, stecken auch mehrere Stories dahinter:
+
+1. Trainer nach der aktiven Spielerkarriere - der klassische Weg? Hier wollen wir erzählen und zeigen, ob dies wirklich der klassische Weg ist und in Teilnetzwerken visualisieren, welche Top 100 Spieler Trainer wurden und welche nicht (eventuell mit Zeitverlauf)
+
+2. Die "goldenen Zeiten des (französischen) Fußballs" - Hier würden wir uns ein Land genauer anschauen und die Geschichte des Fußballs des Landes erzählen sowie neben Hintergrundinfos auch auf Ergebnisse unserer Analyse eingehen und diese visualisieren.
+
+**Status des Forschungsberichts und grundlegende Idee der Visualisierung**  
+
+Wir befinden uns gerade mitten in der Anfertigung des Forschungsberichts. Die Forschungsfrage, die unser Projekt und unseren Forschungsbericht anleitet, lautet weiterhin: Welche der Top 100 Spieler des 20. Jahrhunderts haben zeitgleich im selben Verein und/oder der selben Nationalmannschaft gespielt? Außerdem untersuchen wir die Karrierewege vom Spieler zum Trainer. Der Zeitraum unserer Datenerhebung beginnt mit dem Jahr 1900 und endet mit dem Jahr 1999. Zudem ist die Datenerhebung vollständig abgeschlossen und das Codebuch final definiert. Unsere Datenquelle stammt von der Website http://www.englandfootballonline.com/. Die finale Edge- und Nodelist liegt in unserem Github-Verzeichnis: https://github.com/SNA-Gruppenarbeit-Weltfussballer/igraphobject. Darüber hinaus haben wir bereits folgende Hypothesen aufgestellt, auf die wir im Forschungsbericht näher eingehen.  
+Hypothese 1: Spieler aus den 90er Jahren sind öfter vertreten, weil es „näher an der heutigen Zeit ist“ und diese eher im Gedächtnis bleiben.
+Hypothese 2: Vor allem Spieler aus den großen Fußballnationen Frankreich, Brasilien, Spanien, England, Italien und Deutschland werden vertreten sein.
+Hypothese 3: Es wird am meisten Brasilianer (Nationalität) im Netzwerk geben. 
+Hypothese 4: Vor allem Offensivspieler werden vertreten sein.
+Hypothese 5: in Bezug auf Trainer - Nur aus einem Bruchteil der besten Spieler wurde auch ein Trainer. 
+Hypothese 6: Die großen Fußballer haben tendenziell immer lange bei einem Verein gespielt und kehren dort gerne als Trainer oder als letzte Spieler-Station zurück. 
+Hypothese 7: Große erfolgreiche Vereine sind wichtige Bindeglieder unter den Spielern. 
+In unserem Forschungsbericht erstellen und visualisieren wir mehrere Teilnetzwerke nach Edge- und Vertex-Attributen, die wir zuvor erhoben haben. Damit erhalten wir mehr Aussagekraft zu unseren Hypothesen und unserer Forschungsfrage. Mit den Teilnetzwerken können wir sowohl Intra-Netzwerkvergleiche ziehen, aber auch Zeitverläufe miteinander vergleichen, indem wir Teilnetzwerke zu verschiedenen Zeitpunkten erstellen, wie zum Beispiel zum Zeitpunkt t0 und t1. Ein Beispiel für einen Zeitvergleich nach Dekaden findet sich anbei. 
+Des Weiteren haben wir uns bereits vergleichbare Fußballnetzwerke angeschaut: 
+https://www.torlaune.de/bilder/fussballer-netzwerk-um-die-kapitane-der-euro-2016/
+https://linkurio.us/blog/ballon-dor-network/
+https://fhstpmedien.wordpress.com/2014/07/07/die-netzwerkanalyse-anhand-des-fallbeispiels-fusball/amp/
+https://monami.hs-mittweida.de/frontdoor/deliver/index/docId/2023/file/BA.pdf
+https://www.derstandard.at/story/3357784/netzwerkanalyse-faehigkeiten
+
+Die nächsten Schritte: Die verschiedenen Abschnitte, die im Forschungsbericht enthalten sein müssen, werden auf die Teammitglieder aufgeteilt und am Ende zusammengeführt. 
+
+*Visualisierungsbeispiel: Teilnetzwerke im Zeitvergleich nach Dekaden*
+```{r}
+
+# Datensatz einlesen
+edges <- read.csv("https://raw.githubusercontent.com/veronikaveile/SNA-Netzwerke/main/Weltfu%C3%9Fballer/Edgelist%20neue%20Dekaden.csv", header=T, as.is=T, sep = ",")
+nodes <- read.csv("https://raw.githubusercontent.com/SNA-Gruppenarbeit-Weltfussballer/igraph50/main/WorldSoccerNodelist.csv", header=T, as.is=T, sep = ",")
+
+# Matrix erstellen
+edgematrix <-as.matrix(edges)
+
+# Zusammenführen von Edge- und Nodelist als igraph-Objekt
+# 
+s <- graph_from_data_frame(d=edgematrix, vertices=nodes, directed=F)
+
+E(s)$arrow.size <- .3
+s
+
+# Datensatz anzeigen
+list.edge.attributes(s)
+edge.attributes(s)$decade
+
+# Selektion nach Dekaden
+s
+dec30 <- subgraph.edges(s, E(s)[decade == 1930])
+dec40 <- subgraph.edges(s, E(s)[decade == 1940])
+dec80 <- subgraph.edges(s, E(s)[decade == 1980])
+
+
+# Visualisierung der Teilnetzwerke
+plot(dec30,
+		 #layout=layout_with_kk,
+		 asp=0,
+		 rescale=TRUE,
+		 vertex.frame.color=NA,
+		 vertex.label.color="black",
+		 edge.arrow.size=.3,
+		 edge.color="grey",
+     main=" Netzwerk Weltfußballer 30er Jahre")
+
+plot(dec40,
+		 #layout=layout_with_kk,
+		 asp=0,
+		 rescale=TRUE,
+		 vertex.frame.color=NA,
+		 vertex.label.color="black",
+		 edge.arrow.size=.3,
+		 edge.color="grey",
+     main=" Netzwerk Weltfußballer 40er Jahre")
+```
+
+**hilfreiches theorethisches Konzept mit Erklärungspotenzial**  
+
+Homophilie: Beim Homophilie-Effekt bilden sich oftmals Freundschaften zwischen Personen mit ähnlicher kultureller Prägung. Zudem gibt es bei ähnlicher kultureller Prägung und gemeinsamen Interessen eine höhere Wahrscheinlichkeit für gemeinsame Freizeitaktivitäten wie Sport. Darüber hinaus findet sich Homophilie auch innerhalb von Kategorien wie Alter und Nationalität. Dieser Ansatz könnte Hinweise dazu liefern, ob Fußballer gleicher Nationalität und gleichen Alters auch zusammen in einem Verein gespielt haben. 
+Zentrale Positionen im Netzwerk: Zentrale Akteure verfügen über einen besseren Zugang zu Informationen, da diese sie schneller erreichen. Nach Mark Granovetter korreliert dieser Zugang zu Informationen mit schwachen Beziehungen: Wer seine flüchtigen Bekannten besser pflegt, weiß so zum Beispiel eher über Arbeitsstellen Bescheid. Daraus lässt sich ableiten, dass Fußballer die in mehreren Vereinen gespielt haben einen besseren Zugang zu Informationen haben. 
+Macht: Große erfolgreiche Vereine wie zum Beispiel FC Barcelona, haben die meisten Spieler, da sie entsprechend Geld besitzen, um die Top-Spieler einzukaufen und sind somit zentrale Knoten im Netzwerk. 
+
+**grundlegende Idee der Visualisierung**  
+
+Da bei uns ein multiples Netzwerk vorliegt mit mehreren Beziehungs- und Knotenarten, werden diese entsprechend mit den Befehlen "vertex.size", "vertex.color", "vertex.shape", "edge.lty" und "edge.color" in verschiedener Form und Farbe visualisiert. Weil unser Gesamtnetzwerk zu groß ist, um Aussagen darüber zu treffen, erstellen wir entsprechende Teilnetzwerke (siehe oben). Im Edit-Beitrag betten wir via iframe interaktive Teilnetzwerke mit flourish passend zu unserem Thema ein. Des Weiteren bietet sich gerade bei unserem Netzwerk auch zusätzlich eine Infografik oder eine Weltkarte (Maps) an, weil unsere Knoten aus verschiedenen Nationen der Welt stammen. 
+
+Weitere Visualisierungen, die sich mit unserem Datensatz anbieten sind: Teilnetzwerke nach Karrierebeginn, d.h. in welchem Alter starten die Top 100 Spieler durchschnittlich ihre Karriere; Teilnetzwerke nach Position, d.h. welche Spielerosition ist am häufigsten Vertreten; als auch Teilnetzwerke nach Nationalität, d.h. spielen Fußballer der gleichen Nationalität auch häufig in den gleichen Vereinen. Außerdem wollen wir Ego-Netzwerke von Vereinen erstellen, um so Einzelfall-Analysen von Knoten durchzuführen und unsere Hypothesen zu widerlegen. 
+
+**offene Fragen**  
+
+Was ist mit Hypothesenprüfung gemeint?
+
+Geht es bei der Literatur um Netzwerkliteratur allgemein oder um Literatur zu unserem Thema? (Wir greifen auf einen bestehenden Datensatz zurück)
+
+Wir untersuchen nicht die Beziehungen der Spieler und Trainer untereinander, wir untersuchen eher die Spieler an sich, d.h. in Richtung wer sind die "großen Player"? Wie kann man so etwas auf Theorien übertragen? (Bordieu, Coleman, Burt und Granovetter, Lin, Putman passt hier nicht oder?)
+
+
